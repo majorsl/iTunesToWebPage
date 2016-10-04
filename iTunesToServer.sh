@@ -1,5 +1,5 @@
 #!/bin/sh
-# Version 2.0.2
+# Version 2.0.3
 # Script to share what is playing with iTunes to a Web Page. Companion script is iTunes
 # to web. Assumes you have password-less SSH Keys setup between your client(s) & server!
 #
