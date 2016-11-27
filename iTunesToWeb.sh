@@ -25,7 +25,7 @@ star="&#9733;"
 artwork="/Users/majorsl/Sites/Artwork/"
 
 # Where to put a text file listing missing album art.
-missing="~/Desktop/missingartwork.txt"
+missing="/Users/majorsl/Desktop/missingartwork.txt"
 
 # End of Options
 
