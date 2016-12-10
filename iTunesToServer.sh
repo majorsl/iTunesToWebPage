@@ -1,15 +1,20 @@
 #!/bin/sh
-# Version 2.0.5
+# Version 2.0.6
 # Script to share what is playing with iTunes to a Web Page. Companion script is iTunes
 # to web. Assumes you have password-less SSH Keys setup between your client(s) & server!
 #
 # 1. It assumes your iTunes library is in the default location. If not, modify the path on
 # line 27.
-# 2. Adjust lines 69 & 70 for where the counterpart script is on your web-server.
-# 3. Use a launchd script to run this at user login: ~/LaunchAgents
+# 2. Use a launchd script to run this at user login: ~/LaunchAgents
 
+# Path to your iTunes Library (if yours is default, don't modify.)
+ituneslibrary="~/Music/iTunes/iTunes\ Library.itl"
 # Server to send data to.
 server="server3.themajorshome.com"
+# Path on server where to save data file.
+serverdata="~/Sites/tunes"
+# Path on server where counterpart iTunesToWeb script is located.
+serverscript="~/Scripts/GitHub/iTunesToWebPage"
 
 # oldinfo/info is the last data sent, if it does not match that triggers the upload to the server.
 oldinfo="empty"
@@ -29,7 +34,7 @@ echo "**diagnostic loop** iTunes Open:" $itunes
 		state=`if pgrep -x -q "iTunes"; then osascript -e 'tell application "iTunes" to player state as string'; fi`
 		#-> this is the old way I was doing it, but it would open iTunes if it was closed. Above will double-check if it is running first. state=`osascript -e 'tell application "iTunes" to player state as string'`
 		sleep 10
-		filemod=`stat -f '%m' ~/Music/iTunes/iTunes\ Library.itl`
+		filemod=$(stat -f '%m' $($ituneslibrary))
 		echo "**file modification $filemod**"
 
 		# When playing: sed statement for smart quotes because a standard ' will confuse BASH in the literal string. Also checking file modification to avoid osascript polling & opening iTunes soon after a recent quit.
@@ -66,8 +71,8 @@ echo "**diagnostic loop** iTunes Open:" $itunes
 	# Write data if new.
 	if [ "$oldinfo" != "$info" ]; then
 		echo "**diagnostic send to server**"
-		ssh -o ServerAliveCountMax=2 -o ConnectTimeout=30 $server "printf '%b\n' '$itunesstring' > ~/Sites/tunes/itunesstring.txt"
-		ssh -o ServerAliveCountMax=2 -o ConnectTimeout=30 $server '~/Scripts/GitHub/iTunesToWebPage/./iTunesToWeb.sh'
+		ssh -o ServerAliveCountMax=2 -o ConnectTimeout=30 $server "printf '%b\n' '$itunesstring' > $serverdata/itunesstring.txt"
+		ssh -o ServerAliveCountMax=2 -o ConnectTimeout=30 $server "$serverscript/./iTunesToWeb.sh"
 		oldinfo="$info"
 	fi
 
