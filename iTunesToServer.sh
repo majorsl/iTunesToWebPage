@@ -1,5 +1,5 @@
 #!/bin/sh
-# Version 2.0.7
+# Version 2.0.8
 # Script to share what is playing with iTunes to a Web Page. Companion script is iTunes
 # to web. Assumes you have password-less SSH Keys setup between your client(s) & server!
 #
@@ -34,12 +34,12 @@ echo "**diagnostic loop** iTunes Open:" $itunes
 		state=$(if pgrep -x -q "iTunes"; then osascript -e 'tell application "iTunes" to player state as string'; fi)
 		#-> this is the old way I was doing it, but it would open iTunes if it was closed. Above will double-check if it is running first. state=`osascript -e 'tell application "iTunes" to player state as string'`
 		sleep 10
-		filemod=$(stat -f "%m" "$ituneslibrary")
-		echo "**file modification $filemod**"
+		#filemod=$(stat -f "%m" "$ituneslibrary")
+		#echo "**file modification $filemod**"
 
 		# When playing: sed statement for smart quotes because a standard ' will confuse BASH in the literal string. Also checking file modification to avoid osascript polling & opening iTunes soon after a recent quit.
 		if [ "$state" = "playing" ]; then
-			if [ "$filemod" != "$oldfilemod" ]; then
+			if pgrep -x "iTunes"; then
 				artist=`osascript -e 'tell application "System Events" to if ((name of processes) contains "iTunes") then do shell script ("osascript -e " & quoted form of ("tell application \"iTunes\" to artist of current track as string"))' | sed s/\'/"\\&"\#8217\;/g`
 				track=`osascript -e 'tell application "System Events" to if ((name of processes) contains "iTunes") then do shell script ("osascript -e " & quoted form of ("tell application \"iTunes\" to name of current track as string"))' | sed s/\'/"\\&"\#8217\;/g`
 				album=`osascript -e 'tell application "System Events" to if ((name of processes) contains "iTunes") then do shell script ("osascript -e " & quoted form of ("tell application \"iTunes\" to album of current track as string"))' | sed s/\'/"\\&"\#8217\;/g`
@@ -49,14 +49,14 @@ echo "**diagnostic loop** iTunes Open:" $itunes
 			info="$artist$track$album"
 			echo "**diagnostic track info-playing $state $artist $track $album $rating**"
 			fi
-			oldfilemod="$filemod"
+			#oldfilemod="$filemod"
 			
 		# When not playing.
 		else
 			itunesstring="empty\nempty\n0\nempty"
 			echo "**diagnostic iTunes stopped**"
 			info="empty"
-			filemod="empty"
+			#filemod="empty"
 		fi
 		
 	# iTunes is not Open. Write not running data the same as if stopped/paused.
@@ -65,7 +65,7 @@ echo "**diagnostic loop** iTunes Open:" $itunes
 		itunesstring="empty\nempty\n0\nempty"
 		echo "**diagnostic iTunes not Open**"
 		info="empty"
-		filemod="empty"
+		#filemod="empty"
 	fi
 
 	# Write data if new.
