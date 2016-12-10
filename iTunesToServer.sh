@@ -1,5 +1,5 @@
 #!/bin/sh
-# Version 2.0.6
+# Version 2.0.7
 # Script to share what is playing with iTunes to a Web Page. Companion script is iTunes
 # to web. Assumes you have password-less SSH Keys setup between your client(s) & server!
 #
@@ -8,7 +8,7 @@
 # 2. Use a launchd script to run this at user login: ~/LaunchAgents
 
 # Path to your iTunes Library (if yours is default, don't modify.)
-ituneslibrary="~/Music/iTunes/iTunes\ Library.itl"
+ituneslibrary="/Users/majorsl/Music/iTunes/iTunes Library.itl"
 # Server to send data to.
 server="server3.themajorshome.com"
 # Path on server where to save data file.
@@ -31,10 +31,10 @@ echo "**diagnostic loop** iTunes Open:" $itunes
 	# Get/check iTunes state.
 	if [ "$itunes" = "true" ]; then
 		#state=`osascript -e 'tell application "System Events" to if ((name of processes) contains "iTunes") then do shell script ("osascript -e " & quoted form of ("tell application \"iTunes\" to player state as string"))'`
-		state=`if pgrep -x -q "iTunes"; then osascript -e 'tell application "iTunes" to player state as string'; fi`
+		state=$(if pgrep -x -q "iTunes"; then osascript -e 'tell application "iTunes" to player state as string'; fi)
 		#-> this is the old way I was doing it, but it would open iTunes if it was closed. Above will double-check if it is running first. state=`osascript -e 'tell application "iTunes" to player state as string'`
 		sleep 10
-		filemod=$(stat -f '%m' $($ituneslibrary))
+		filemod=$(stat -f "%m" "$ituneslibrary")
 		echo "**file modification $filemod**"
 
 		# When playing: sed statement for smart quotes because a standard ' will confuse BASH in the literal string. Also checking file modification to avoid osascript polling & opening iTunes soon after a recent quit.
