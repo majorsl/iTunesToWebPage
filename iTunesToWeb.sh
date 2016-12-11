@@ -1,5 +1,5 @@
 #!/bin/sh
-# Version 2.0.3
+# Version 2.0.4
 # Script to share what is playing with iTunes to a Web Page. Companion script is
 # iTunesToServer.
 #
@@ -15,8 +15,10 @@
 # file this creates will be written & served by your webserver:
 maindata="/Users/majorsl/Sites/tunes/"
 
-# Star rating symbol to use.
+# Star rating symbols to use. 5 star rating, if you use an inverse that will display as
+# the "unfilled" stars. You may also leave it empty by just using "" for starinverse.
 star="&#9733;"
+starinverse="&#9734;"
 
 # Directory of Album Artwork. Must be a .jpg and in "Artist Name - Album Name" format and
 # match the artist & album name in your iTunes exactly!
@@ -46,16 +48,21 @@ artist=`echo "${tune[1]}" | sed s/\&\#8217\;/\'/g`
 if [ "${tune[3]}" = "empty" ]; then
 	rm itunesblog.html
 	touch itunesblog.html
-	replace=""
 	exit
 fi
 
 # Assemble star rating.
 xloop="0"
 starnumber=$((${tune[2]} / 20))
+starnumberinv=$(expr 5 - $starnumber)
 
 while [ "$xloop" -lt "$starnumber" ]; do
 rating="$star""$rating"
+let xloop=$xloop+1
+done
+xloop=0
+while [ "$xloop" -lt "$starnumberinv" ]; do
+rating="$rating""$starinverse"
 let xloop=$xloop+1
 done
 
