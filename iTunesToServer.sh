@@ -1,12 +1,12 @@
 #!/bin/sh
-# Version 2.0.9
+# Version 2.1.0
 # Script to share what is playing with iTunes to a Web Page. Companion script is iTunes
 # to web. Assumes you have password-less SSH Keys setup between your client(s) & server!
 #
 # Use a launchd script to run this at user login: ~/LaunchAgents
 #
 # --Options--
-# Path to your iTunes Library (if yours is default, don't modify.)
+# Path to your iTunes Library.
 ituneslibrary="/Users/majorsl/Music/iTunes/iTunes Library.itl"
 # Server to send data to.
 server="server3.themajorshome.com"
@@ -18,7 +18,6 @@ serverscript="~/Scripts/GitHub/iTunesToWebPage"
 
 # oldinfo/info is the last data sent, if it does not match that triggers the upload to the server.
 oldinfo="empty"
-filemod="empty"
 
 while :
 do
@@ -35,11 +34,10 @@ echo "**diagnostic loop** iTunes Open:" $itunes
 		# When playing: sed statement for smart quotes because a standard ' will confuse BASH in the literal string. Also checking file modification to avoid osascript polling & opening iTunes soon after a recent quit.
 		if [ "$state" = "playing" ]; then
 			if pgrep -x "iTunes"; then
-				artist=`osascript -e 'tell application "System Events" to if ((name of processes) contains "iTunes") then do shell script ("osascript -e " & quoted form of ("tell application \"iTunes\" to artist of current track as string"))' | sed s/\'/"\\&"\#8217\;/g`
-				track=`osascript -e 'tell application "System Events" to if ((name of processes) contains "iTunes") then do shell script ("osascript -e " & quoted form of ("tell application \"iTunes\" to name of current track as string"))' | sed s/\'/"\\&"\#8217\;/g`
-				album=`osascript -e 'tell application "System Events" to if ((name of processes) contains "iTunes") then do shell script ("osascript -e " & quoted form of ("tell application \"iTunes\" to album of current track as string"))' | sed s/\'/"\\&"\#8217\;/g`
-				rating=`osascript -e 'tell application "System Events" to if ((name of processes) contains "iTunes") then do shell script ("osascript -e " & quoted form of ("tell application \"iTunes\" to rating of current track as string"))'`
-
+				artist=$(osascript -e 'tell application "iTunes" to artist of current track as string' | sed s/\'/"\\&"\#8217\;/g)
+				track=$(osascript -e 'tell application "iTunes" to name of current track as string' | sed s/\'/"\\&"\#8217\;/g)
+				album=$(osascript -e 'tell application "iTunes" to album of current track as string' | sed s/\'/"\\&"\#8217\;/g)
+				rating=$(osascript -e 'tell application "iTunes" to rating of current track as string')
 			itunesstring="$album\n$artist\n$rating\n$track"
 			info="$artist$track$album"
 			echo "**diagnostic track info-playing $state $artist $track $album $rating**"
@@ -52,15 +50,15 @@ echo "**diagnostic loop** iTunes Open:" $itunes
 			info="empty"
 		fi
 		
-	# iTunes is not Open. Write not running data the same as if stopped/paused.
+	# iTunes is not Open. Send not running data the same as if stopped/paused.
 	else
 		sleep 10
 		itunesstring="empty\nempty\n0\nempty"
 		echo "**diagnostic iTunes not Open**"
-		info="empty"		#filemod="empty"
+		info="empty"
 	fi
 
-	# Write data if new.
+	# Send data if new.
 	if [ "$oldinfo" != "$info" ]; then
 		echo "**diagnostic send to server**"
 		ssh -o ServerAliveCountMax=2 -o ConnectTimeout=30 $server "printf '%b\n' '$itunesstring' > $serverdata/itunesstring.txt"
