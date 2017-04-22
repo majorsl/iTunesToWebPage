@@ -1,5 +1,5 @@
 #!/bin/sh
-# Version 2.1.0
+# Version 2.1.1
 # Script to share what is playing with iTunes to a Web Page. Companion script is iTunes
 # to web. Assumes you have password-less SSH Keys setup between your client(s) & server!
 #
@@ -35,8 +35,8 @@ echo "**diagnostic loop** iTunes Open:" $itunes
 		if [ "$state" = "playing" ]; then
 			if pgrep -x "iTunes"; then
 				artist=$(osascript -e 'tell application "iTunes" to artist of current track as string' | sed s/\'/"\\&"\#8217\;/g)
-				track=$(osascript -e 'tell application "iTunes" to name of current track as string' | sed s/\'/"\\&"\#8217\;/g)
 				album=$(osascript -e 'tell application "iTunes" to album of current track as string' | sed s/\'/"\\&"\#8217\;/g)
+				track=$(osascript -e 'tell application "iTunes" to name of current track as string' | sed s/\'/"\\&"\#8217\;/g)
 				rating=$(osascript -e 'tell application "iTunes" to rating of current track as string')
 			itunesstring="$album\n$artist\n$rating\n$track"
 			info="$artist$track$album"
