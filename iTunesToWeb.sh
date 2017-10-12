@@ -1,5 +1,5 @@
-#!/bin/sh
-# Version 2.0.4
+#!/usr/bin/env bash
+# Version 2.0.5
 # Script to share what is playing with iTunes to a Web Page. Companion script is
 # iTunesToServer.
 #
@@ -31,7 +31,7 @@ missing="/Users/majorsl/Desktop/missingartwork.txt"
 
 # End of Options
 
-cd $maindata
+cd $maindata || exit
 
 rating=""
 
@@ -42,8 +42,8 @@ tune=($(cat itunesstring.txt))
 unset IFS
 
 # Cleanup of filenames for artwork file links e.g. smartquotes currently.
-album=`echo "${tune[0]}" | sed s/\&\#8217\;/\'/g`
-artist=`echo "${tune[1]}" | sed s/\&\#8217\;/\'/g`
+album=$(echo "${tune[0]}" | sed s/\&\#8217\;/\'/g)
+artist=$(echo "${tune[1]}" | sed s/\&\#8217\;/\'/g)
 
 if [ "${tune[3]}" = "empty" ]; then
 	rm itunesblog.html
@@ -54,21 +54,21 @@ fi
 # Assemble star rating.
 xloop="0"
 starnumber=$((${tune[2]} / 20))
-starnumberinv=$(expr 5 - $starnumber)
+starnumberinv=$((5 - starnumber))
 
 while [ "$xloop" -lt "$starnumber" ]; do
 rating="$star""$rating"
-let xloop=$xloop+1
+xloop=$((xloop+1))
 done
 xloop=0
 while [ "$xloop" -lt "$starnumberinv" ]; do
 rating="$rating""$starinverse"
-let xloop=$xloop+1
+xloop=$((xloop+1))
 done
 
 if [ "$starnumber" = "0" ]; then
 	rating=""
-elif [ "$starnumber" > "0" ]; then
+elif [ "$starnumber" -gt "0" ]; then
 	rating=' I rate it <span style="font-size: 120%;">'$rating'</span>.'
 fi
 
