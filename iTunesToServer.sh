@@ -7,7 +7,7 @@
 #
 # --Options--
 # Server to send data to.
-server="server3.themajorshome.com"
+server="server.themajorshome.com"
 # Path on server where to save data file.
 serverdata="/Users/majorsl/Sites/tunes"
 # Path on server where counterpart iTunesToWeb script is located.

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Version 2.0.5
+# Version 2.1
 # Script to share what is playing with iTunes to a Web Page. Companion script is
 # iTunesToServer.
 #
@@ -11,9 +11,11 @@
 #
 # Set Other Options Here:
 
-# Path to the directory where the companion uploads its data to as well as where the html
-# file this creates will be written & served by your webserver:
+# Path to the directory where the companion uploads its data:
 maindata="/Users/majorsl/Sites/tunes/"
+
+# Path to the directory where the html file is sent for publishing:
+htmldata="/Volumes/web/tunes/"
 
 # Star rating symbols to use. 5 star rating, if you use an inverse that will display as
 # the "unfilled" stars. You may also leave it empty by just using "" for starinverse.
@@ -23,11 +25,13 @@ starinverse="&#9734;"
 # Directory of Album Artwork. Must be a .jpg and in "Artist Name - Album Name" format and
 # match the artist & album name in your iTunes exactly!
 # Example filename: Gin Blossoms - Outside Looking In.jpg
-# This also needs to be in your site path so it can display the artwork to visitors.
-artwork="/Users/majorsl/Sites/Artwork/"
+artwork="/Volumes/web/tunes/Artwork/"
+
+# url path to the artwork:
+urlartwork="https://www.themajorshome.com/tunes/Artwork/"
 
 # Where to put a text file listing missing album art.
-missing="/Users/majorsl/Desktop/missingartwork.txt"
+missing="/Users/majorsl/Downloads/missingartwork.txt"
 
 # End of Options
 
@@ -46,8 +50,7 @@ album=$(echo "${tune[0]}" | sed s/\&\#8217\;/\'/g)
 artist=$(echo "${tune[1]}" | sed s/\&\#8217\;/\'/g)
 
 if [ "${tune[3]}" = "empty" ]; then
-	rm itunesblog.html
-	touch itunesblog.html
+	> "$htmldata"itunesblog.html
 	exit
 fi
 
@@ -81,4 +84,4 @@ if [ ! -f "$artwork$artist - $album.jpg" ]; then
 fi
 
 #String for Wordpress Blog
-echo '<h3 class="widget-title">Currently Listening To</h3>"'${tune[3]}'" by '${tune[1]}' from the album <i>'${tune[0]}'</i>.'$rating'<br><img src="https://www.themajorshome.com/Artwork/'$artist' - '$album'.jpg" alt="" width="300" border="0">' > itunesblog.html
+echo '<h3 class="widget-title">Currently Listening To</h3>"'${tune[3]}'" by '${tune[1]}' from the album <i>'${tune[0]}'</i>.'$rating'<br><img src="'$urlartwork''$artist' - '$album'.jpg" alt="" width="300" border="0">' > "$htmldata"itunesblog.html
