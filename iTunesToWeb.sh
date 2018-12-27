@@ -15,7 +15,7 @@
 maindata="/Users/majorsl/Sites/tunes/"
 
 # Path to the directory where the html file is sent for publishing:
-htmldata="/Volumes/web/tunes/"
+htmldata="/Users/majorsl/Library/Containers/nz.co.pixeleyes.AutoMounter/Data/Mounts/synology/SMB/web/tunes/"
 
 # Star rating symbols to use. 5 star rating, if you use an inverse that will display as
 # the "unfilled" stars. You may also leave it empty by just using "" for starinverse.
@@ -25,7 +25,7 @@ starinverse="&#9734;"
 # Directory of Album Artwork. Must be a .jpg and in "Artist Name - Album Name" format and
 # match the artist & album name in your iTunes exactly!
 # Example filename: Gin Blossoms - Outside Looking In.jpg
-artwork="/Volumes/web/tunes/Artwork/"
+artwork="/Users/majorsl/Library/Containers/nz.co.pixeleyes.AutoMounter/Data/Mounts/synology/SMB/web/tunes/Artwork/"
 
 # url path to the artwork:
 urlartwork="https://www.themajorshome.com/tunes/Artwork/"
